@@ -34,6 +34,15 @@ class LensSystem( object ):
         print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
         self.Lelements = []
 
+    def MatrixMultiplication(self, A, B):
+        result = [0,0,0,0]
+        result[0] = A[0]*B[0] + A[1]*B[2]
+        result[1] = A[0]*B[1] + A[1]*B[3]
+        result[2] = A[2]*B[0] + A[3]*B[2]
+        result[3] = A[2]*B[1] + A[3]*B[3]
+        return result
+
+
     def add(self, Mtype, z, params):        
         if Mtype.lower()=="lens":
             newEle = {"z": z, "matrix": [1,0,-1./params[0],1],'type':'lens'}
@@ -52,7 +61,15 @@ class LensSystem( object ):
 
     def calculateQuntilZ(self,z_end):
         #get elements before z_end
-        pass
+        #find elements that are before z:
+        zind = self.getListOrder()
+        il = [ x for x in zind if x[1]<z_end]
+        print "Anzahl elemente vorher:",len(il)
+        for i in range(len(il)):
+            print il[i]
+            ### hier kommt jetzt die Berechnung der Gesamtmatrix hin
+
+
 LS = LensSystem(633e-9)
 LS.add('lens',.3,[1])
 LS.add('lens',.1,[2])
@@ -63,8 +80,13 @@ print LS.Lelements
 print len(LS.Lelements)
 #print LS.Lelements[]['z']
 
-LS.getListOrder()
+print LS.getListOrder()
 LS.printPositions()
+
+
+#print LS.MatrixMultiplication( [3,0,9,3],[5,10,7,0])
+
+LS.calculateQuntilZ(0.5)
 
 def gtest():
     g = GaussBeam(633e-9,"rw",[-12,0.1e-3])
