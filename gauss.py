@@ -28,11 +28,12 @@ class GaussBeam(object):
             print "R    = %.5f m "%self.r
             print "div  = %.5f mrad (divergence far field)"%(self.divergence/1e-3) 
         else:
-            print "Error: GaussBeam not properly initialzed. Can not print beam parameters"
+            print "Error: GaussBeam not properly initialzed. Can not print beam"
 
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 class LensSystem( object ):
-
+    verbose = True
     def __init__(self, wavelength):
         self.wavelength=wavelength
         print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
@@ -54,7 +55,6 @@ class LensSystem( object ):
 
     def add(self, Mtype, z, params):        
         if Mtype.lower()=="lens":
-#            newEle = {"z": z, "matrix": [1,0,-1./params[0],1],'type':'lens'}
             newEle = {"z": z, "matrix": self.MatrixLens(params[0]),'type':'lens'}
             print "... appended a lens (f=%3f m) at z=%.3f m to the system"%(params[0],z)
             self.Lelements.append(newEle)
@@ -68,54 +68,52 @@ class LensSystem( object ):
     def printPositions(self):
         zind = self.getListOrder()
         for i in range(len(zind)):
-            print "Bei z = %.3f das Element mit dem Index %d"%(zind[i][1],zind[i][0])
+            print "At z = %.3f is the element with number  %d"%(zind[i][1],zind[i][0])
 
     def calculatePropmatrixUntilZ(self,z_end):
         #get elements before z_end
-        print "Zsoll = ",z_end
         zind = self.getListOrder()
         #find elements that are before z:
         ElementList = [ x for x in zind if x[1]<z_end]
- #       print "Anzahl elemente vorher:",len(ElementList)
         M = []
         aktz = 0
-
+        if self.verbose:
+            print "Z_end = ",z_end
+            print "number of elements before: ",len(ElementList)
         for i in range(len(ElementList)):
-#            print ElementList[i]
             zwert = ElementList[i][1]
             index = ElementList[i][0]
             zdiff = zwert-aktz
             aktz = zwert
-            print "Luft : %.4f m, dann Element Nr %d"%(zdiff,index)
+            if self.verbose:
+                print "air: %.4f m, then element number %d"%(zdiff,index)
             M.append(self.MatrixFreeSpace(zdiff,1.0))
             M.append(self.Lelements[index]['matrix'])
-#            M = self.MatrixMultiplication( M
-            ### hier kommt jetzt die Berechnung der Gesamtmatrix hin
-        #jetzt noch die restliche Luft
         zdiff = z_end - aktz
-        print "letztes : Luft : %.4f m"%(zdiff)
-        #add air
+        if self.verbose:
+            print "after last element: %.4f m of air"%(zdiff)
         M.append(self.MatrixFreeSpace(zdiff,1.0))
-#        print "M"
-#        for i in range(len(M)):
-#            print M[i]
         Mtot = [1,0,0,1]
-        print "M2 (reverse)"
+        
+        if self.verbose:
+            print "Matrices including free space in reverse order:"
         for i in range(len(M)-1,-1,-1):
-            Mtot = self.MatrixMultiplication(M[i],Mtot)
-            print M[i]
-#        print Mtot
+            Mtot = self.MatrixMultiplication(Mtot,M[i])
+            if self.verbose:
+                print M[i]
         return Mtot
 
-LS = LensSystem(633e-9)
-LS.add('lens',.3,[1])
-#LS.add('lens',.1,[2])
-LS.add('lens',4,[.2])
-LS.add('lens',.2,[1.3])
-LS.add('lens',.1,[1.3])
-print LS.getListOrder()
-LS.printPositions()
-print LS.calculatePropmatrixUntilZ(.14)
+
+    def addBeam(self, gbeam):
+        self.beamZ0 = gbeam
+
+
+    def CalculateBeam( self, zend,points):
+        dz = zend / 1.0 / points
+        for i in range(points):
+            z = i * dz
+            ## MTOT
+            ## qdash
 
 def gtest():
     g = GaussBeam(633e-9,"rw",[-12,0.1e-3])
@@ -126,4 +124,24 @@ def gtest():
     g2.print_params()
     g3.print_params()
 
+
+def LStest1():
+    LS = LensSystem(633e-9)
+    LS.add('lens',.3,[1])
+#LS.add('lens',.1,[2])
+    LS.add('lens',4,[.2])
+    LS.add('lens',.2,[1.3])
+    LS.add('lens',.1,[1.3])
+    print LS.getListOrder()
+    LS.printPositions()
+    print LS.calculatePropmatrixUntilZ(.14)
+
+
+def LStest2():
+    LS=LensSystem(633e-9)
+    LS.add('lens',0.1,[0.33])
+
+    LS.addBeam( GaussBeam(633e-9, 'rw',[1e8,0.1e-3]))
+
+LStest2()
 
