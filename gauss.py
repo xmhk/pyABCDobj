@@ -3,7 +3,6 @@ CONST_PI=3.14159265359
 
 class GaussBeam(object):
     initsuccess = False
-
     def __init__(self, wavelength, mode, arg):
         self.wavelength = wavelength
         if mode.lower() == "q":
@@ -33,7 +32,7 @@ class GaussBeam(object):
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 class LensSystem( object ):
-    verbose = True
+    verbose = False
     def __init__(self, wavelength):
         self.wavelength=wavelength
         print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
@@ -101,17 +100,33 @@ class LensSystem( object ):
             Mtot = self.MatrixMultiplication(Mtot,M[i])
             if self.verbose:
                 print M[i]
+        if self.verbose:
+            print "Total propagation matrix : ",Mtot
         return Mtot
 
 
-    def addBeam(self, gbeam):
-        self.beamZ0 = gbeam
+    def addBeam(self, mode, params):
+        self.beamZ0 = GaussBeam( self.wavelength, mode, params)
 
 
     def CalculateBeam( self, zend,points):
         dz = zend / 1.0 / points
+        qlist = []
+        zl = []
         for i in range(points):
             z = i * dz
+            M = self.calculatePropmatrixUntilZ(z)
+            qs = (self.beamZ0.q * M[0] + M[1]) /  (self.beamZ0.q * M[2] + M[3])
+            qlist.append( GaussBeam( self.wavelength, 'q', qs))
+            if self.verbose:
+                qlist[i].print_params()
+            zl.append(z)
+        ws = [x.w for x in qlist]
+        rs = [x.r for x in qlist]
+        ds = [x.divergence for x in qlist]
+#        z = [x*dz for x in range(points)]
+        return ws,rs,ds,zl
+            
             ## MTOT
             ## qdash
 
@@ -128,7 +143,7 @@ def gtest():
 def LStest1():
     LS = LensSystem(633e-9)
     LS.add('lens',.3,[1])
-#LS.add('lens',.1,[2])
+    LS.add('lens',.1,[2])
     LS.add('lens',4,[.2])
     LS.add('lens',.2,[1.3])
     LS.add('lens',.1,[1.3])
@@ -137,11 +152,24 @@ def LStest1():
     print LS.calculatePropmatrixUntilZ(.14)
 
 
+from matplotlib import pyplot as plt
+
 def LStest2():
     LS=LensSystem(633e-9)
-    LS.add('lens',0.1,[0.33])
+    LS.add('lens',0.5,[0.09])
 
-    LS.addBeam( GaussBeam(633e-9, 'rw',[1e8,0.1e-3]))
-
+    LS.addBeam( 'rw',[-80,0.1e-3])
+    ws,rs,ds,zs = LS.CalculateBeam(1.0, 2000)
+    
+    LS.beamZ0.print_params()
+    plt.figure(1)
+    plt.subplot(311)
+    plt.plot(zs,ws)
+    plt.subplot(312)
+    plt.plot(zs,rs)
+    plt.subplot(313)
+    plt.plot(zs,ds)
+    plt.savefig("lenstest2.pdf")
+    plt.close(1)
 LStest2()
 
