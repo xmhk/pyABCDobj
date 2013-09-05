@@ -126,6 +126,6 @@ class LensSystem( object ):
         rs = [x.r for x in qlist]
         ds = [x.divergence for x in qlist]
 #        z = [x*dz for x in range(points)]
-        return ws,rs,ds,zl
+        return ws,rs,ds,zl,[x.q for x in qlist]
 
 
