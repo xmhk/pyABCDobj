@@ -44,6 +44,9 @@ class LensSystem( object ):
     def matrix_free_space(self, L,n):
         return [1,n*L,0,1]
 
+    def matrix_curved_mirror(self, R):
+        return [1.0,0.0,  -2.0/R,1.0]
+
     def __matrix_multiplication(self, A, B):
         result = [0,0,0,0]
         result[0] = A[0]*B[0] + A[1]*B[2]
@@ -51,7 +54,6 @@ class LensSystem( object ):
         result[2] = A[2]*B[0] + A[3]*B[2]
         result[3] = A[2]*B[1] + A[3]*B[3]
         return result
-
 
     def add_element(self, Mtype, z, params):        
         if Mtype.lower()=="lens":
