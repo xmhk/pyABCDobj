@@ -35,7 +35,8 @@ class LensSystem( object ):
     verbose = False
     def __init__(self, wavelength):
         self.wavelength=wavelength
-        print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
+        if self.verbose:
+            print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
         self.Lelements = []
     def clone(self):
         LSclone = LensSystem(self.wavelength)
@@ -62,7 +63,8 @@ class LensSystem( object ):
     def add_element(self, Mtype, z, params):        
         if Mtype.lower()=="lens":
             newEle = {"z": z, "matrix": self.matrix_lens(params[0]),'type':'lens'}
-            print "... appended a lens (f=%.5f m) at z=%.5f m to the system"%(params[0],z)
+            if self.verbose :
+                print "... appended a lens (f=%.5f m) at z=%.5f m to the system"%(params[0],z)
             self.Lelements.append(newEle)
         else:
             print "unknown element :("
