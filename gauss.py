@@ -37,6 +37,10 @@ class LensSystem( object ):
         self.wavelength=wavelength
         print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
         self.Lelements = []
+    def clone(self):
+        LSclone = LensSystem(self.wavelength)
+        LSclone.Lelements = self.Lelements
+        return LSclone
 
     def matrix_lens(self,f):
         return [1,0,-1.0/f,1]
