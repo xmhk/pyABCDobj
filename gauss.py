@@ -1,7 +1,7 @@
 
 CONST_PI=3.14159265359
 
-class GaussBeam(object):
+class GaussianBeam(object):
     initsuccess = False
     def __init__(self, wavelength, mode, arg):
         self.wavelength = wavelength
