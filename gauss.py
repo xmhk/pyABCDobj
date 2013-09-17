@@ -38,85 +38,19 @@ class LensSystem( object ):
         if self.verbose:
             print "empty LensSystem created at wavelength of %.2f nm."%(wavelength / 1e-9)
         self.Lelements = []
-    def clone(self):
-        LSclone = LensSystem(self.wavelength)
-        LSclone.Lelements = self.Lelements
-        return LSclone
 
-    def matrix_lens(self,f):
-        return [1,0,-1.0/f,1]
+    def add_beam(self, mode, params):
+        self.beamZ0 = GaussBeam( self.wavelength, mode, params)
 
-    def matrix_free_space(self, L,n):
-        return [1,n*L,0,1]
-
-    def matrix_curved_mirror(self, R):
-        return [1.0,0.0,  -2.0/R,1.0]
-
-    def __matrix_multiplication(self, A, B):
-        result = [0,0,0,0]
-        result[0] = A[0]*B[0] + A[1]*B[2]
-        result[1] = A[0]*B[1] + A[1]*B[3]
-        result[2] = A[2]*B[0] + A[3]*B[2]
-        result[3] = A[2]*B[1] + A[3]*B[3]
-        return result
 
     def add_element(self, Mtype, z, params):        
         if Mtype.lower()=="lens":
-            newEle = {"z": z, "matrix": self.matrix_lens(params[0]),'type':'lens'}
+            newEle = {"z": z, "matrix": self.__matrix_lens(params[0]),'type':'lens'}
             if self.verbose :
                 print "... appended a lens (f=%.5f m) at z=%.5f m to the system"%(params[0],z)
             self.Lelements.append(newEle)
         else:
             print "unknown element :("
-
-    def get_list_order(self):
-        zind = sorted(enumerate([ele['z'] for ele in self.Lelements]),key=lambda x:x[1])
-        return zind
-
-    def print_positions(self):
-        zind = self.get_list_order()
-        for i in range(len(zind)):
-            print "At z = %.3f is the element with number  %d"%(zind[i][1],zind[i][0])
-
-    def calc_propmatrix_until_z(self,z_end):
-        #get elements before z_end
-        zind = self.get_list_order()
-        #find elements that are before z:
-        ElementList = [ x for x in zind if x[1]<z_end]
-        M = []
-        aktz = 0
-        if self.verbose:
-            print "Z_end = ",z_end
-            print "number of elements before: ",len(ElementList)
-        for i in range(len(ElementList)):
-            zwert = ElementList[i][1]
-            index = ElementList[i][0]
-            zdiff = zwert-aktz
-            aktz = zwert
-            if self.verbose:
-                print "air: %.4f m, then element number %d"%(zdiff,index)
-            M.append(self.matrix_free_space(zdiff,1.0))
-            M.append(self.Lelements[index]['matrix'])
-        zdiff = z_end - aktz
-        if self.verbose:
-            print "after last element: %.4f m of air"%(zdiff)
-        M.append(self.matrix_free_space(zdiff,1.0))
-        Mtot = [1,0,0,1]
-       
-        if self.verbose:
-            print "Matrices including free space in reverse order:"
-        for i in range(len(M)-1,-1,-1):
-            Mtot = self.__matrix_multiplication(Mtot,M[i])
-            if self.verbose:
-                print M[i]
-        if self.verbose:
-            print "Total propagation matrix : ",Mtot
-        return Mtot
-
-
-    def add_beam(self, mode, params):
-        self.beamZ0 = GaussBeam( self.wavelength, mode, params)
-
 
     def calc_beam( self, zend,points):
         dz = zend / 1.0 / points
@@ -135,5 +69,72 @@ class LensSystem( object ):
         ds = [x.divergence for x in qlist]
 #        z = [x*dz for x in range(points)]
         return ws,rs,ds,zl,[x.q for x in qlist]
+
+
+    def clone(self):
+        LSclone = LensSystem(self.wavelength)
+        LSclone.Lelements = self.Lelements
+        return LSclone
+
+    def __matrix_lens(self,f):
+        return [1,0,-1.0/f,1]
+
+    def __matrix_free_space(self, L,n):
+        return [1,n*L,0,1]
+
+    def __matrix_curved_mirror(self, R):
+        return [1.0,0.0,  -2.0/R,1.0]
+    
+    def __matrix_multiplication(self, A, B):
+        result = [0,0,0,0]
+        result[0] = A[0]*B[0] + A[1]*B[2]
+        result[1] = A[0]*B[1] + A[1]*B[3]
+        result[2] = A[2]*B[0] + A[3]*B[2]
+        result[3] = A[2]*B[1] + A[3]*B[3]
+        return result
+
+    def __get_list_order(self):
+        zind = sorted(enumerate([ele['z'] for ele in self.Lelements]),key=lambda x:x[1])
+        return zind
+
+    def print_positions(self):
+        zind = self.__get_list_order()
+        for i in range(len(zind)):
+            print "At z = %.3f is the element with number  %d"%(zind[i][1],zind[i][0])
+
+    def calc_propmatrix_until_z(self,z_end):
+        #get elements before z_end
+        zind = self.__get_list_order()
+        #find elements that are before z:
+        ElementList = [ x for x in zind if x[1]<z_end]
+        M = []
+        aktz = 0
+        if self.verbose:
+            print "Z_end = ",z_end
+            print "number of elements before: ",len(ElementList)
+        for i in range(len(ElementList)):
+            zwert = ElementList[i][1]
+            index = ElementList[i][0]
+            zdiff = zwert-aktz
+            aktz = zwert
+            if self.verbose:
+                print "air: %.4f m, then element number %d"%(zdiff,index)
+            M.append(self.__matrix_free_space(zdiff,1.0))
+            M.append(self.Lelements[index]['matrix'])
+        zdiff = z_end - aktz
+        if self.verbose:
+            print "after last element: %.4f m of air"%(zdiff)
+        M.append(self.__matrix_free_space(zdiff,1.0))
+        Mtot = [1,0,0,1]
+       
+        if self.verbose:
+            print "Matrices including free space in reverse order:"
+        for i in range(len(M)-1,-1,-1):
+            Mtot = self.__matrix_multiplication(Mtot,M[i])
+            if self.verbose:
+                print M[i]
+        if self.verbose:
+            print "Total propagation matrix : ",Mtot
+        return Mtot
 
 

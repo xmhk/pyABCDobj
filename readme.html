@@ -1,0 +1,105 @@
+<h2>pyABCDobj</h2>
+
+<ul>
+<li>a object oriented framework to calculate the propagation of gaussian beams</li>
+<li>provides 2 Classes:
+<ul>
+<li><strong>GaussianBeam</strong> - to calculate the beam parameters</li>
+<li><strong>LensSystem</strong>   - to calculate the propagation using the ABCD formalism</li>
+</ul></li>
+</ul>
+
+<h2>class GaussianBeam</h2>
+
+<ul>
+<li><p><strong>initialization</strong></p>
+
+<p>beam = <strong>GaussianBeam( wavelength, mode, arg )</strong></p>
+
+<ul>
+<li>wavelength is the wavelength in nm</li>
+<li>mode is either 'q' or 'rw', which means you can define your beam by the complex beam parameters or a pair of  radius of curvature and waist (both given in meters)</li>
+<li>examples:
+<ul>
+<li>b1 = GaussianBeam( 633e-9, 'q', 0 + .45j )</li>
+<li>b2 = GaussianBeam( 1064-9, 'rw', [30, 2e-3])</li>
+</ul></li>
+</ul></li>
+<li><p>from the input parameters, the following physical values are calculated automatically:</p>
+
+<ul>
+<li><strong>GaussianBeam.q</strong> - the complex parameter q</li>
+<li><strong>GaussianBeam.r</strong> - the radius of curvature (phase)</li>
+<li><strong>GaussianBeam.w</strong> - the beam waist</li>
+<li><strong>GaussianBeam.divergence</strong> - the divergence in the far field</li>
+</ul></li>
+<li><p>furthermore, the beam wavelength is stored <strong>GaussianBeam.wavelength</strong></p></li>
+<li>for convenience, all parameters can be printed out by <strong>GaussianBeam.print_params()</strong></li>
+</ul>
+
+<hr />
+
+<h2>class LensSystem</h2>
+
+<ul>
+<li><p><strong>__init__(wavelength)</strong></p>
+
+<ul>
+<li>initializes an empty lens system (wavelength in nm)</li>
+</ul></li>
+<li><p><strong>add_beam(mode, params)</strong>:</p>
+
+<ul>
+<li>adds a gaussian mean at z=0</li>
+<li><strong>mode</strong> is either 'rw' or 'q'</li>
+</ul></li>
+<li><p><strong>add_element( Type, zpos, params )</strong>:</p>
+
+<ul>
+<li>adds an element to the system.</li>
+<li><strong>Type</strong> can be
+<ul>
+<li>'lens'</li>
+</ul></li>
+<li><strong>zpos</strong> is the z position of the element</li>
+<li><strong>params</strong> is a list of params (e.g. [f] for a simple lens)</li>
+</ul></li>
+<li><p><strong>calc_beam(zend,points)</strong>:</p>
+
+<ul>
+<li>calculates the beam up to <strong>zend</strong> with <strong>points</strong> as the number or points</li>
+<li>returns  : [ w,r,d,z,q  ], where
+<ul>
+<li><strong>w</strong> is the list of waists(z)</li>
+<li><strong>r</strong> is the list of beam curvatures</li>
+<li><strong>d</strong> is the list of divergences</li>
+<li><strong>z</strong> is the list of z values</li>
+<li><strong>q</strong> is the list of q values</li>
+</ul></li>
+</ul></li>
+<li><p><strong>calc_propmatrix_until_z(z_end)</strong></p>
+
+<ul>
+<li>calculates the propagation matrix up to z</li>
+</ul></li>
+<li><p><strong>clone()</strong></p>
+
+<ul>
+<li>returns a copy of the lens system (without beams)</li>
+</ul></li>
+<li><p><strong>print_positions()</strong>:</p>
+
+<ul>
+<li>print positions of elements</li>
+</ul></li>
+</ul>
+
+<h3>not documented (yet)</h3>
+
+<ul>
+<li><strong>__matrix_lens()</strong></li>
+<li><strong>__matrix_free_space</strong></li>
+<li><strong>__matrix_curved_mirror(self, R)</strong>    </li>
+<li><strong>__matrix_multiplication</strong></li>
+<li><strong>__get_list_order</strong></li>
+</ul>
