@@ -24,5 +24,4 @@
 * for convenience, all parameters can be printed out by **GaussianBeam.print\_params()**
 
 
-
 ## pyABCDobj ##
