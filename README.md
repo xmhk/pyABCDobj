@@ -1,6 +1,7 @@
 
 
 ## pyABCDobj ##
+* version 2013-09-17
 * a object oriented framework to calculate the propagation of gaussian beams
 * provides 2 Classes:
     * **GaussianBeam** - to calculate the beam parameters
