@@ -1,7 +1,7 @@
 <h2>pyABCDobj</h2>
 
 <ul>
-<li>version 2013-09-17</li>
+<li>version 2013-09-20</li>
 <li>a object oriented framework to calculate the propagation of gaussian beams</li>
 <li>provides 2 Classes:
 <ul>
@@ -41,6 +41,8 @@
 <hr />
 
 <h2>class LensSystem</h2>
+
+<h3>public methods</h3>
 
 <ul>
 <li><p><strong>__init__(wavelength)</strong></p>
@@ -95,12 +97,12 @@
 </ul></li>
 </ul>
 
-<h3>not documented (yet)</h3>
+<h3>private methods</h3>
 
 <ul>
-<li><strong>__matrix_lens()</strong></li>
-<li><strong>__matrix_free_space</strong></li>
-<li><strong>__matrix_curved_mirror(self, R)</strong>    </li>
-<li><strong>__matrix_multiplication</strong></li>
-<li><strong>__get_list_order</strong></li>
+<li><strong>__get_list_order</strong> get the order of the elements in the lens system</li>
+<li><strong>__matrix_lens( f )</strong> returns the ABCD matrix of a lens with focal length <em>f</em></li>
+<li><p><strong>__matrix_free_space( L, n)</strong> returns the ABCD matrix of a free space propagation (length <em>L</em>, refractive index <em>n</em>) </p></li>
+<li><p><strong>__matrix_curved_mirror(self, R)</strong> returns the ABCD matrix of a curved mirror with radius <em>R</em></p></li>
+<li><strong>__matrix_multiplication( A, B )</strong> perform matrix multiplication of <em>A</em> and <em>B</em></li>
 </ul>

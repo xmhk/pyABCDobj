@@ -1,7 +1,7 @@
 
 
 ## pyABCDobj ##
-* version 2013-09-17
+* version 2013-09-20
 * a object oriented framework to calculate the propagation of gaussian beams
 * provides 2 Classes:
     * **GaussianBeam** - to calculate the beam parameters
@@ -28,7 +28,7 @@
 
 ---
 ## class LensSystem ##
-
+###public methods
 * **\_\_init\_\_(wavelength)**
     * initializes an empty lens system (wavelength in nm)
 
@@ -62,10 +62,14 @@
 * **print_positions()**:
     * print positions of elements
 
+###private methods
+* **\_\_get\_list\_order** get the order of the elements in the lens system
+* **\_\_matrix\_lens( f )** returns the ABCD matrix of a lens with focal length _f_
+* **\_\_matrix\_free\_space( L, n)** returns the ABCD matrix of a free space propagation (length _L_, refractive index _n_) 
 
-### not documented (yet)
-* **\_\_matrix\_lens()**
-* **\_\_matrix\_free_space**
-* **\_\_matrix\_curved_mirror(self, R)**    
-* **\_\_matrix\_multiplication**
-* **\_\_get\_list\_order**
+* **\_\_matrix\_curved\_mirror(self, R)** returns the ABCD matrix of a curved mirror with radius _R_
+* **\_\_matrix\_multiplication( A, B )** perform matrix multiplication of _A_ and _B_
+
+
+
+
