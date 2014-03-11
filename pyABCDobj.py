@@ -18,7 +18,7 @@ class GaussianBeam(object):
             self.divergence = ( self.wavelength/CONST_PI / abs( self.q.imag )) ** 0.5
             self.initsuccess = True
         else:
-            print "Please use GaussBeam('q', wavelength, qVal) or GaussBeam('rw',wavelength, [R,w])"
+            print "Please use GaussianBeam('q', wavelength, qVal) or GaussianBeam('rw',wavelength, [R,w])"
 
     def print_params(self):
         if self.initsuccess:
@@ -27,7 +27,7 @@ class GaussianBeam(object):
             print "R    = %.5f m "%self.r
             print "div  = %.5f mrad (divergence far field)"%(self.divergence/1e-3) 
         else:
-            print "Error: GaussBeam not properly initialzed. Can not print beam"
+            print "Error: GaussianBeam not properly initialzed. Can not print beam"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -40,7 +40,7 @@ class LensSystem( object ):
         self.Lelements = []
 
     def add_beam(self, mode, params):
-        self.beamZ0 = GaussBeam( self.wavelength, mode, params)
+        self.beamZ0 = GaussianBeam( self.wavelength, mode, params)
 
 
     def add_element(self, Mtype, z, params):        
@@ -60,7 +60,7 @@ class LensSystem( object ):
             z = i * dz
             M = self.calc_propmatrix_until_z(z)
             qs = (self.beamZ0.q * M[0] + M[1]) /  (self.beamZ0.q * M[2] + M[3])
-            qlist.append( GaussBeam( self.wavelength, 'q', qs))
+            qlist.append( GaussianBeam( self.wavelength, 'q', qs))
             if self.verbose:
                 qlist[i].print_params()
             zl.append(z)
