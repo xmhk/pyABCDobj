@@ -40,7 +40,8 @@
 * **add_element( Type, zpos, params )**:
     * adds an element to the system.
     * **Type** can be
-        * 'lens'
+        * 'lens' (params = [focal length])
+	* 'curvedmirror' (params = [Radius of curvature])
     * **zpos** is the z position of the element
     * **params** is a list of params (e.g. [f] for a simple lens)
 

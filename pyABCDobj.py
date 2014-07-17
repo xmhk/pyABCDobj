@@ -49,6 +49,11 @@ class LensSystem( object ):
             if self.verbose :
                 print "... appended a lens (f=%.5f m) at z=%.5f m to the system"%(params[0],z)
             self.Lelements.append(newEle)
+        elif Mtype.lower()=="curvedmirror":
+            newEle= {"z":z,"matrix": self.__matrix_curved_mirror(params[0]),'type':'curved mirror'}
+            if self.verbose :
+                print "... appended a curved mirror (R=%.5f m) at z=%.5f m to the system"%(params[0],z)
+            self.Lelements.append(newEle)
         else:
             print "unknown element :("
 
