@@ -28,20 +28,20 @@
 
 ---
 ## class LensSystem ##
-###public methods
+### public methods
 * **\_\_init\_\_(wavelength)**
     * initializes an empty lens system (wavelength in nm)
 
 
 * **add_beam(mode, params)**:
-    * adds a gaussian mean at z=0
+    * adds a gaussian bean at z=0
     * **mode** is either 'rw' or 'q'
 
 * **add_element( Type, zpos, params )**:
     * adds an element to the system.
     * **Type** can be
         * 'lens' (params = [focal length])
-	* 'curvedmirror' (params = [Radius of curvature])
+        * 'curvedmirror' (params = [Radius of curvature])
     * **zpos** is the z position of the element
     * **params** is a list of params (e.g. [f] for a simple lens)
 
@@ -63,7 +63,7 @@
 * **print_positions()**:
     * print positions of elements
 
-###private methods
+### private methods
 * **\_\_get\_list\_order** get the order of the elements in the lens system
 * **\_\_matrix\_lens( f )** returns the ABCD matrix of a lens with focal length _f_
 * **\_\_matrix\_free\_space( L, n)** returns the ABCD matrix of a free space propagation (length _L_, refractive index _n_) 
